@@ -51,3 +51,38 @@ else
         cp /tmp/${myname}-httpd-logs-${timestamp}.tar \
         s3://${s3_bucket}/${myname}-httpd-logs-${timestamp}.tar
 fi
+
+# 5 - update data in inventory.html, if not present then created 
+if [ -f "/var/www/html/inventory.html" ]; 
+then
+	printf "<p>" >> /var/www/html/inventory.html
+	printf "\n\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 11 | cut -d '-' -f 2,3)" >> /var/www/html/inventory.html
+	printf "\t\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 11 | cut -d '-' -f 4,5 | cut -d '.' -f 1)" >> /var/www/html/inventory.html
+	printf "\t\t\t $(ls -lrth /tmp | grep httpd | cut -d ' ' -f 11 | cut -d '-' -f 4,5 | cut -d '.' -f 2)" >> /var/www/html/inventory.html
+	printf "\t\t\t\t$(ls -lrth /tmp/ | grep httpd | cut -d ' ' -f 6)" >> /var/www/html/inventory.html	
+	printf "</p>" >> /var/www/html/inventory.html
+	
+else 
+	touch /var/www/html/inventory.html
+	printf "<p>" >> /var/www/html/inventory.html
+	printf "\tLog Type\t\tDate Created\t\t\tType\t\t\tSize" >> /var/www/html/inventory.html
+	printf "</p>" >> /var/www/html/inventory.html
+	printf "<p>" >> /var/www/html/inventory.html
+
+	printf "\n\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 11 | cut -d '-' -f 2,3)" >> /var/www/html/inventory.html
+	printf "\t\t$(ls -lrth /tmp | grep httpd | cut -d ' ' -f 11 | cut -d '-' -f 4,5 | cut -d '.' -f 1)" >> /var/www/html/inventory.html
+	printf "\t\t\t $(ls -lrth /tmp | grep httpd | cut -d ' ' -f 11 | cut -d '-' -f 4,5 | cut -d '.' -f 2)" >> /var/www/html/inventory.html
+	printf "\t\t\t\t$(ls -lrth /tmp/ | grep httpd | cut -d ' ' -f 6)" >> /var/www/html/inventory.html
+
+	printf "</p>" >> /var/www/html/inventory.html
+	
+fi
+
+# 6 - Scheduling cronjob to run automation.sh
+if [ -f "/etc/cron.d/automation" ];
+then
+	continue
+else
+	touch /etc/cron.d/automation
+	printf "* * * * * root /root/Automation_Project/auotmation.sh" > /etc/cron.d/automation
+fi
