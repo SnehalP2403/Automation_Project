@@ -21,7 +21,7 @@ then
         else
                 if [ $(systemctl status apache2 | grep active | cut -d ':' -f 2 | cut -d ' ' -f 2) == 'active' ]
                 then
-                        echo "Apache2 is already Running"
+                        echo "Apache2 is already Running..."
                 else
                         systemct1 start apache2
                         echo "Apache2 started"
